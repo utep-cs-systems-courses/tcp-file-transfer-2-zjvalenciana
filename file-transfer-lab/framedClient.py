@@ -53,15 +53,15 @@ def utf8len(s):
     return len(s.encode('utf-8'))
 
 if exists(file_to_send):
-    print("hello")
     file_copy = open(file_to_send, 'r') #open file
     file_data = file_copy.read()    #save contents of file
-    #print(file_data)
     if utf8len(file_data) == 0:
+        print("cannot send empty file")
         sys.exit(0)
     else:
         framedSend(s, file_data.encode(), debug)
         print("received:", framedReceive(s, debug))
 
 else:
+    print("file does not exist.")
     sys.exit(0)
