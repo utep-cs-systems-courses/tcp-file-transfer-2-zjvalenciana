@@ -35,21 +35,5 @@ def framedReceive(sock, debug=0):
          if len(r) == 0:
              if len(rbuf) != 0:
                  print("FramedReceive: incomplete message. \n  state=%s, length=%d, rbuf=%s" % (state, msgLength, rbuf))
-                 user_input = input("connection lost, incomplete meassage do you still want to write to a file?")
-                 if user_input == 'yes':
-                    
-                    if exists(output_file):
-                        overw = input("want overwrite the filed you entered? ")
-                        if overw == 'yes':
-                            output = open(output_file, 'w')
-                            payload = payload.decode('utf8')
-                            output.write(payload)
-                        else:
-                            pass
-                    else:
-                        output = open(output_file, 'w')
-                        payload = payload.decode('utf8')
-                        output.write(payload)
-
              return None
          if debug: print("FramedReceive: state=%s, length=%d, rbuf=%s" % (state, msgLength, rbuf))

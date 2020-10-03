@@ -41,16 +41,16 @@ while True:
     framedSend(sock, payload, debug)
 
     output_file = input("give me output: ")
-    
+
     if exists(output_file):
         overw = input("want overwrite the filed you entered? ")
         if overw == 'yes':
-            output = open(output_file, 'w')
-            payload = payload.decode('utf8')
+            output = open(output_file, 'wb')
+            #payload = payload.decode('utf8')
             output.write(payload)
         else:
             pass
     else:
-        output = open(output_file, 'w')
-        payload = payload.decode('utf8')
+        output = open(output_file, 'wb')
+        #payload = payload.decode('utf8')
         output.write(payload)

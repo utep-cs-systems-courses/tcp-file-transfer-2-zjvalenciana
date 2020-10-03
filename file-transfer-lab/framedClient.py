@@ -49,17 +49,15 @@ s.connect(addrPort)
 
 file_to_send = input("type file to send : ")
 
-def utf8len(s):
-    return len(s.encode('utf-8'))
-
 if exists(file_to_send):
-    file_copy = open(file_to_send, 'r') #open file
+    file_copy = open(file_to_send, 'rb') #open file
     file_data = file_copy.read()    #save contents of file
-    if utf8len(file_data) == 0:
+    if len(file_data) == 0:
         print("cannot send empty file")
         sys.exit(0)
     else:
-        framedSend(s, file_data.encode(), debug)
+        framedSend(s, file_data, debug)
+        #s.send(file_data)
         print("received:", framedReceive(s, debug))
 
 else:
