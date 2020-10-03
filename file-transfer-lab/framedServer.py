@@ -37,13 +37,25 @@ while True:
     if debug: print("rec'd: ", payload)
     if not payload:
         break
-    payload += b"!"             # make emphatic!
-    framedSend(sock, payload, debug)
+              # make emphatic!
+    #framedSend(sock, payload, debug)
+    payload = payload.decode()
+    
 
-    output_file = input("give me output: ")
-
-    if exists(output_file):
-        overw = input("want overwrite the filed you entered? ")
+    if exists(payload):
+        framedSend(sock, b"True", debug)
+    else:
+        framedSend(sock, b"False", debug)
+        payload2 = framedReceive(sock, debug)
+        if debug: print("rec'd: ", payload2)
+        if not payload2:
+            break
+        payload2 += b"!"             # make emphatic!
+        framedSend(sock, payload2, debug)
+        #payload = payload.decode()
+        output = open(payload, 'wb')
+        output.write(payload2)
+        '''overw = input("want overwrite the filed you entered? ")
         if overw == 'yes':
             output = open(output_file, 'wb')
             #payload = payload.decode('utf8')
@@ -53,4 +65,4 @@ while True:
     else:
         output = open(output_file, 'wb')
         #payload = payload.decode('utf8')
-        output.write(payload)
+        output.write(payload) '''

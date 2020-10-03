@@ -56,9 +56,16 @@ if exists(file_to_send):
         print("cannot send empty file")
         sys.exit(0)
     else:
-        framedSend(s, file_data, debug)
-        #s.send(file_data)
-        print("received:", framedReceive(s, debug))
+        file_name = input("give us file name ")
+        framedSend(s, file_name.encode(), debug)
+        file_exists = framedReceive(s, debug)
+        file_exists = file_exists.decode()
+        if file_exists == 'True':
+            print("file already exists in server")
+            sys.exit(0)
+        else:            
+            framedSend(s, file_data, debug)
+            print("received:", framedReceive(s, debug))
 
 else:
     print("file does not exist.")
