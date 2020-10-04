@@ -70,6 +70,6 @@ while True:
                 #payload = payload.decode()
                 output = open(payload, 'wb')
                 output.write(payload2)
-                sys.exit(0)
-        sock.close()
+                #sys.exit(0)
+                sock.close()
         f#ork.close()
