@@ -64,8 +64,20 @@ if exists(file_to_send):
             print("file already exists in server")
             sys.exit(0)
         else:            
-            framedSend(s, file_data, debug)
-            print("received:", framedReceive(s, debug))
+            try:
+                framedSend(s, file_data, debug)
+            except:
+                print("------------------------------")
+                print("connection lost while sending.")
+                print("------------------------------")
+                sys.exit(0)
+            try:
+                framedReceive(s, debug)
+            except:
+                print("------------------------------")
+                print("connection lost while receiving.")
+                print("------------------------------")
+                sys.exit(0)
 
 else:
     print("file does not exist.")
