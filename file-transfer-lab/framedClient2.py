@@ -3,10 +3,13 @@
 # Echo client program
 import socket, sys, re
 
+from os.path import exists
+
 sys.path.append("../lib")       # for params
 import params
-from os.path import exists
-from encapFramedSock import EncapFramedSock
+
+from framedSock import framedSend, framedReceive
+
 
 
 switchesVarDefaults = (
@@ -36,15 +39,13 @@ addrFamily = socket.AF_INET
 socktype = socket.SOCK_STREAM
 addrPort = (serverHost, serverPort)
 
-sock = socket.socket(addrFamily, socktype)
+s = socket.socket(addrFamily, socktype)
 
-if sock is None:
+if s is None:
     print('could not open socket')
     sys.exit(1)
 
-sock.connect(addrPort)
-
-fsock = EncapFramedSock((sock, addrPort))
+s.connect(addrPort)
 
 file_to_send = input("type file to send : ")
 
@@ -57,22 +58,22 @@ if exists(file_to_send):
         sys.exit(0)
     else:
         file_name = input("give us file name : ") #prompt for file name to be saved on server
-        fsock.send(file_name.encode(), debug) #encode to convert to byte array
-        file_exists = fsock.receive(debug) #server will return true or false
+        framedSend(s, file_name.encode(), debug) #encode to convert to byte array
+        file_exists = framedReceive(s, debug) #server will return true or false
         file_exists = file_exists.decode()
         if file_exists == 'True':
             print("file already exists in server")
             sys.exit(0)
         else:            
             try:
-                fsock.send(file_data, debug)
+                framedSend(s, file_data, debug)
             except:
                 print("------------------------------")
                 print("connection lost while sending.")
                 print("------------------------------")
                 sys.exit(0)
             try:
-                fsock.receive(debug)
+                framedReceive(s, debug)
             except:
                 print("------------------------------")
                 print("connection lost while receiving.")

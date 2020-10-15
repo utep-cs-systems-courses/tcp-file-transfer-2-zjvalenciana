@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 
-import sys, os
+import sys
 sys.path.append("../lib")       # for params
-import re, socket, params
+import re, socket, params, os
 from os.path import exists
 
 switchesVarDefaults = (
@@ -25,28 +25,31 @@ lsock.bind(bindAddr)
 lsock.listen(5)
 print("listening on:", bindAddr)
 
-from framedSock import framedSend, framedReceive
+from threading import Thread;
+from encapFramedSock import EncapFramedSock
 
-while True:
-
-    sock, addr = lsock.accept()
-    print("connection rec'd from", addr)
-    if not os.fork(): #if youre a child do following 
+class Server(Thread):
+    def __init__(self, sockAddr):
+        Thread.__init__(self)
+        self.sock, self.addr = sockAddr
+        self.fsock = EncapFramedSock(sockAddr)
+    def run(self):
+        print("new thread handling connection from", self.addr)
         while True:
-            payload = framedReceive(sock, debug) #recieve file name to be saved 
-
-            if not payload:
-                break
-
+            payload = self.fsock.receive(debug) #recieve file name to be saved
+            if debug: print("rec'd: ", payload)
+            if not payload:     # done
+                if debug: print(f"thread connected to {addr} done")
+                self.fsock.close() #possible error
+                return          # exit
             payload = payload.decode() #recieve byte array and convert to string 
-            
-
+            #self.fsock.send(payload, debug)
             if exists(payload):
-                framedSend(sock, b"True", debug)
+                self.fsock.send(b"True", debug)
             else:
-                framedSend(sock, b"False", debug) #recieving file data 
+                self.fsock.send(b"False", debug) #recieving file data 
                 try:
-                    payload2 = framedReceive(sock, debug)
+                    payload2 = self.fsock.receive(debug)
                 except:
                     print("connection lost while recieving.")
                     sys.exit(0)
@@ -55,7 +58,7 @@ while True:
                     break
                 payload2 += b"!"             # make emphatic!
                 try:
-                    framedSend(sock, payload2, debug)
+                    self.fsock.send(payload2, debug)
                 except:
                     print("------------------------------")
                     print("connection lost while sending.")
@@ -64,4 +67,10 @@ while True:
                 output = open(payload, 'wb') #open and set to write byte array
                 output.write(payload2) #writing to file 
                 output.close()
-                sock.close() 
+                self.fsock.close()
+        
+
+while True:
+    sockAddr = lsock.accept()
+    server = Server(sockAddr)
+    server.start()
