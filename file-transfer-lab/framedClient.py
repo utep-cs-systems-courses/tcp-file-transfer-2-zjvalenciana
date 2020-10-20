@@ -48,6 +48,8 @@ fsock = EncapFramedSock((sock, addrPort))
 
 file_to_send = input("type file to send : ")
 
+
+
 if exists(file_to_send):
     file_copy = open(file_to_send, 'rb') #open file
     file_data = file_copy.read()    #save contents of file
